@@ -1,0 +1,509 @@
+// Name of the package
+package sokobon.views;
+
+import java.awt.GridLayout;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.util.HashMap;
+import javax.swing.ImageIcon;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import models.Coord;
+import models.Map;
+import models.MapElement;
+import models.SokobanGame;
+import models.WarehouseKeeper;
+import utill.FileHolder;
+
+/**
+ *
+ *
+ */
+public class Sokoban extends javax.swing.JFrame {
+
+    private String mapNames[] = new String[5];
+    private HashMap<String, String> myHashMap;
+    private Map tmpMap;
+    private Coord warehouseKeeperLog;
+    private Integer level;
+    private Integer dir;
+    private Boolean complete;
+    private JLabel[][] myElements;
+    private SokobanGame myGame;
+
+    /**
+     * Creates new form Sokoban
+     */
+    public Sokoban() {
+        initComponents();
+
+        level = 0;
+        dir = 0;
+        complete = false;
+        warehouseKeeperLog = new Coord(0, 0);
+        mapNames[0] = FileHolder.LEVEL1;
+        mapNames[1] = FileHolder.LEVEL2;
+        mapNames[2] = FileHolder.LEVEL3;
+        mapNames[3] = FileHolder.LEVEL4;
+        mapNames[4] = FileHolder.LEVEL5;
+        btnReset.setEnabled(false);
+
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
+            @Override
+            public boolean dispatchKeyEvent(KeyEvent e) {
+                if (KeyEvent.KEY_PRESSED == e.getID()) {
+                    if (myGame != null) {
+
+                        if (myGame.getMap().moveWarehouseKeeper(e.getKeyCode())) {
+                            drawMap();
+                        } else {
+                            System.out.println("No Moves");
+                        }
+                    }
+                }
+                return false;
+            }
+        });
+
+    }
+
+    // draw game UI 
+    private void drawMap() {
+        try {
+            myCenterPanel.removeAll();
+            Integer mHeight = myGame.getMap().getHeight();
+            Integer mWidth = myGame.getMap().getLgth();
+            myElements = new JLabel[mHeight][mWidth];
+            GridLayout mGridLayout = new GridLayout(mHeight, mWidth, 0, 0);
+
+            myCenterPanel.setLayout(mGridLayout);
+            ImageIcon ico = null;
+            for (int line = 0; line < mHeight; line++) {
+                String mTemp = new String();
+                for (int column = 0; column < mWidth; column++) {
+
+                    MapElement mMapElement = myGame.getMap().getElement(line, column);
+
+                    if (mMapElement != null) {
+                        mTemp += mMapElement.getSymbol();
+
+                        if (mMapElement instanceof WarehouseKeeper) {
+                            warehouseKeeperLog.setXCoord(column);
+                            warehouseKeeperLog.setYCoord(line);
+                        }
+
+                        ico = new ImageIcon(new File(mMapElement.getImgFilename()).toURL());
+                        JLabel levelElement = new JLabel(ico);
+                        myElements[line][column] = levelElement;
+                        myCenterPanel.add(levelElement);
+                    }
+                }
+
+            }
+            myCenterPanel.revalidate();
+            btnReset.setEnabled(true);
+            lblMoves.setText(myGame.getMap().getNumMoves().toString());
+            complete = myGame.getMap().checkForWin();
+            if (complete) {
+                JDialog.setDefaultLookAndFeelDecorated(true);
+                if (level < 5) {
+                    int response = JOptionPane.showConfirmDialog(null, "You just leveled up!!! Do you want to test your skills in the next level?", "Yes", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    if (response == JOptionPane.YES_OPTION) {
+                        lblLevel.setText((++level).toString());
+                        lblMoves.setText("--");
+                        myGame.loadMap(mapNames[level - 1]);
+                        drawMap();
+                    } else {
+                        System.exit(0);
+                    }
+                } else {
+                    int response = JOptionPane.showConfirmDialog(null, "hip hip huray! You have completed the Game. Would you like to exit?", "comfirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    if (response == JOptionPane.YES_OPTION) {
+                        System.exit(0);
+                    } else {
+
+                    }
+                }
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        myCenterPanel = new javax.swing.JPanel();
+        btnLevel1 = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        btnLevel2 = new javax.swing.JButton();
+        btnLevel3 = new javax.swing.JButton();
+        btnLevel4 = new javax.swing.JButton();
+        btnLevel5 = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        btnQuit = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        lblMoves = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        lblLevel = new javax.swing.JLabel();
+        btnReset = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
+        addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                formKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                formKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                formKeyTyped(evt);
+            }
+        });
+
+        btnLevel1.setText("Level 1");
+        btnLevel1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnLevel1MouseClicked(evt);
+            }
+        });
+        btnLevel1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLevel1ActionPerformed(evt);
+            }
+        });
+
+        jLabel3.setText("Select a level");
+
+        btnLevel2.setText("Level 2");
+        btnLevel2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLevel2ActionPerformed(evt);
+            }
+        });
+
+        btnLevel3.setText("Level 3");
+        btnLevel3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLevel3ActionPerformed(evt);
+            }
+        });
+
+        btnLevel4.setText("Level 4");
+        btnLevel4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLevel4ActionPerformed(evt);
+            }
+        });
+
+        btnLevel5.setText("Level 5");
+        btnLevel5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLevel5ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout myCenterPanelLayout = new javax.swing.GroupLayout(myCenterPanel);
+        myCenterPanel.setLayout(myCenterPanelLayout);
+        myCenterPanelLayout.setHorizontalGroup(
+            myCenterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(myCenterPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btnLevel1, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(42, 42, 42)
+                .addComponent(btnLevel2, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+                .addComponent(btnLevel3, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, myCenterPanelLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(24, 24, 24))
+            .addGroup(myCenterPanelLayout.createSequentialGroup()
+                .addGap(38, 38, 38)
+                .addComponent(btnLevel4, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnLevel5, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(53, 53, 53))
+        );
+        myCenterPanelLayout.setVerticalGroup(
+            myCenterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(myCenterPanelLayout.createSequentialGroup()
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(myCenterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnLevel1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnLevel2, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnLevel3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(62, 62, 62)
+                .addGroup(myCenterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnLevel4, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnLevel5, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(91, Short.MAX_VALUE))
+        );
+
+        btnQuit.setText("Exit");
+        btnQuit.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnQuitMouseClicked(evt);
+            }
+        });
+        btnQuit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnQuitActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(31, Short.MAX_VALUE)
+                .addComponent(btnQuit, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(20, 20, 20))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(125, 125, 125)
+                .addComponent(btnQuit, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(150, Short.MAX_VALUE))
+        );
+
+        jLabel1.setText("No Of Moves:");
+
+        lblMoves.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblMoves.setText("--");
+
+        jLabel2.setText("Current Level:");
+
+        lblLevel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblLevel.setText("--");
+
+        btnReset.setText("Restore");
+        btnReset.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnResetMouseClicked(evt);
+            }
+        });
+        btnReset.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnResetActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(94, 94, 94)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblLevel, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(31, 31, 31)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(myCenterPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(160, 160, 160)
+                                .addComponent(btnReset, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addGap(8, 8, 8)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(51, 51, 51)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(17, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblMoves, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblLevel, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblMoves, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(myCenterPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(9, 9, 9)
+                .addComponent(btnReset, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(37, Short.MAX_VALUE))
+        );
+
+        pack();
+        setLocationRelativeTo(null);
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void btnLevel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnLevel1MouseClicked
+
+    }//GEN-LAST:event_btnLevel1MouseClicked
+
+    private void btnResetMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnResetMouseClicked
+
+    }//GEN-LAST:event_btnResetMouseClicked
+
+    private void btnQuitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnQuitMouseClicked
+
+    }//GEN-LAST:event_btnQuitMouseClicked
+
+    private void btnLevel1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLevel1ActionPerformed
+
+        level = 1;
+        myGame = new SokobanGame();
+        myGame.loadMap(mapNames[0]);
+        tmpMap = myGame.getMap();
+        lblLevel.setText(level + "");
+        lblLevel.repaint();
+        drawMap();
+    }//GEN-LAST:event_btnLevel1ActionPerformed
+
+    private void btnLevel2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLevel2ActionPerformed
+        level = 2;
+        myGame = new SokobanGame();
+        myGame.loadMap(mapNames[1]);
+        tmpMap = myGame.getMap();
+        lblLevel.setText(level + "");
+        drawMap();
+    }//GEN-LAST:event_btnLevel2ActionPerformed
+
+    private void btnLevel3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLevel3ActionPerformed
+        level = 3;
+        myGame = new SokobanGame();
+        myGame.loadMap(mapNames[2]);
+        tmpMap = myGame.getMap();
+        lblLevel.setText(level + "");
+        drawMap();
+    }//GEN-LAST:event_btnLevel3ActionPerformed
+
+    private void btnLevel4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLevel4ActionPerformed
+        level = 4;
+        myGame = new SokobanGame();
+        myGame.loadMap(mapNames[3]);
+        tmpMap = myGame.getMap();
+        lblLevel.setText(level + "");
+        drawMap();
+    }//GEN-LAST:event_btnLevel4ActionPerformed
+
+    private void btnLevel5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLevel5ActionPerformed
+        level = 5;
+        myGame = new SokobanGame();
+        myGame.loadMap(mapNames[4]);
+        tmpMap = myGame.getMap();
+        lblLevel.setText(level + "");
+
+        drawMap();
+    }//GEN-LAST:event_btnLevel5ActionPerformed
+
+    private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
+
+        JDialog.setDefaultLookAndFeelDecorated(true);
+        int response = JOptionPane.showConfirmDialog(null, "Are you sure you want to restore?", "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if (response == JOptionPane.YES_OPTION) {
+            lblLevel.setText(level + "");
+            lblMoves.setText("--");
+            myGame.loadMap(mapNames[level - 1]);
+            drawMap();
+        }
+    }//GEN-LAST:event_btnResetActionPerformed
+
+    private void formKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyReleased
+
+
+    }//GEN-LAST:event_formKeyReleased
+
+    private void formKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyTyped
+
+    }//GEN-LAST:event_formKeyTyped
+
+    private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
+
+    }//GEN-LAST:event_formKeyPressed
+
+    private void btnQuitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnQuitActionPerformed
+
+        JDialog.setDefaultLookAndFeelDecorated(true);
+        int response = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit?", "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if (response == JOptionPane.YES_OPTION) {
+            System.exit(0);
+        }
+
+    }//GEN-LAST:event_btnQuitActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(Sokoban.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(Sokoban.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(Sokoban.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Sokoban.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                Sokoban sokoban = new Sokoban();
+                sokoban.pack();
+                sokoban.setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnLevel1;
+    private javax.swing.JButton btnLevel2;
+    private javax.swing.JButton btnLevel3;
+    private javax.swing.JButton btnLevel4;
+    private javax.swing.JButton btnLevel5;
+    private javax.swing.JButton btnQuit;
+    private javax.swing.JButton btnReset;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JLabel lblLevel;
+    private javax.swing.JLabel lblMoves;
+    private javax.swing.JPanel myCenterPanel;
+    // End of variables declaration//GEN-END:variables
+
+}
